@@ -1,6 +1,9 @@
 """
   [ INTERVIEW QUESTION ]
   532. K-Diff Pairs in an Array
+  [ Medium ] [ 40.3% ] -- Solved 24/06/2022 -- [ HashMap ]
+  ----------------------------------------
+
   Find distinct pairs in array (a, b) such that a+k = b, k is given
   a and b cannot be picked from the same index, this was not the case in the interview question I got
 
