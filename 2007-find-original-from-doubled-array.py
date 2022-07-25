@@ -73,3 +73,23 @@ def findOriginalArray(changed):
             paired += (2 if hm[double_key] == 0 else 1)
 
     return out if len(keys) == paired else []
+
+
+"""
+ Leetcode discussion solution: Same complexity as the solution above but uses collections.Counter for better time and
+ memory usage since this question requires building a Frequency Distribution
+"""
+import collections
+def findOriginalArray(changed):
+    if len(changed) % 2: return []
+    ctr = collections.Counter(changed)
+    print(ctr)
+    if ctr[0] % 2: return []
+    for val in sorted(ctr):
+        if ctr[val] > ctr[val * 2]: return []
+        if val == 0:
+            ctr[val * 2] -= ctr[val] // 2
+        else:
+            ctr[val * 2] -= ctr[val]
+    print(ctr)
+    return ctr.elements()

@@ -6,7 +6,8 @@
   MEMORY USAGE: 83.43%
 
   Approach:
-  In this question, in one pass, we add two lists, node by node. The l2 list is used as the answer list, if it falls
+  Given two lists, with the numbers written in reverse order (leftmost is unit).
+  In one pass, we add two lists, node by node. The l2 list is used as the answer list, if it falls
   short in size, it is linked to the remaining l1 list. Efficient on time and space
   - Adding two lists sounds easy, the slight twist is that the lists may not be the same size, one may be shorter than
     the other
@@ -24,7 +25,7 @@
 def addTwoNumbers(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
     l1p = l1
     l2p = l2
-    carry = val = 0
+    carry = 0
     prev = None
 
     # Add two numbers till one of them finishes
