@@ -18,6 +18,9 @@
     - If arr[n] is larger than expected, the duplicate is to the right
   
   - Hence, it is sort + binary search to narrow down on the duplicated element
+  
+  Time Complexity: O(NlogN)
+  Space Complexity: O(1) - depends on sorting algorithm
 """
 
 
@@ -43,6 +46,9 @@ def findDuplicate(self, nums):
   - Use Floyd's cycle finding algorithm, fast and slow pointer, remember where the intersect
   - Reset the slow pointer, run the slow and fast pointers at the same speed now
   - The node of intersection is now the node where the cycle starts
+  
+  Time Complexity: O(N) - Floyd's Cycle finding algorithm provably completes in linear time
+  Space complexity: O(1)
 """
 
 
