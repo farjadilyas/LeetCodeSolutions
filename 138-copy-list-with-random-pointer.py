@@ -32,6 +32,10 @@
     - Both have the same space complexity (O(N) if answer is counted)
     - Can go with either, I went with the first one
 
+  - IMPORTANT: Line used to point random pointer of copied list to correct random pointer:
+    - node.copied_node.random = node.random.copied_node
+    - Intuition: First loop ensures random.copied_node has been set
+
   - OPTIMIZATION: Remove need for a HashMap (a bit of a hack)
     - The need for a hashmap in both options can be removed by introducing a pointer in the original node to reference
       a potentially copied node
@@ -45,11 +49,15 @@
 def copyRandomList(self, head):
     cur = head
     ans = cur_ans = Node(-1)
+
+    # Copy next chain and simultaneously build output linked list
+    # Place each copied node as a reference inside the corresponding original node
     while cur:
         cur_ans.next = cur.cp = Node(cur.val, None, None)
         cur_ans = cur_ans.next
         cur = cur.next
 
+    # Point random pointers to the copied nodes that are available with each original node
     cur = head
     while cur:
         if cur.random:
