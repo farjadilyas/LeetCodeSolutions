@@ -36,11 +36,14 @@ import heapq
 
 
 def mergeKLists(self, lists):
+    # Initialize min-heap of size k, for considering k nodes
     hp = []
     for i, ls in enumerate(lists):
         if ls:
             # Push (priority, list index, current head of list)
             heapq.heappush(hp, (ls.val, i, ls))
+
+    # Pop smallest node, advance the relevant linked list and add the new node to the heap for consideration
     head = cur = ListNode()
     while hp:
         popped = heapq.heappop(hp)
@@ -49,5 +52,7 @@ def mergeKLists(self, lists):
         ls = lists[popped[1]] = lists[popped[1]].next
         if ls:
             heapq.heappush(hp, (ls.val, popped[1], ls))
+
+    # Ensure merged linked list is terminated
     cur.next = None
     return head.next

@@ -55,8 +55,8 @@ def maxSubArray(self, nums):
 
 def maxSubArray(self, nums):
     global_max = local_max = nums[0]
-    for num in nums:
+    for i in range(1, len(nums)):
         # Max between starting a new interval here or continuing the current interval
-        local_max = max(local_max, num + local_max)
+        local_max = max(nums[i], nums[i] + local_max)
         global_max = max(global_max, local_max)
     return global_max
