@@ -33,7 +33,7 @@ def findPairs(self, arr: List[int], k: int) -> int:
     count = 0
     hm = {}
     for e in arr:
-        if k == 0 and e in hm and hm[e] < 3:
+        if k == 0 and e in hm and hm[e] != 3:
             hm[e] = 3
             count += 1
         if e not in hm:
