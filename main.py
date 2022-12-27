@@ -218,6 +218,42 @@ class Trie:
                 return False
         return True
 
+"""
+@param: strs: a list of strings
+@return: encodes a list of strings to a single string.
+"""
+def encode(strs):
+    # write your code here
+    return '|'.join([s.replace('|', '||') for s in strs])
+
+"""
+@param: str: A string
+@return: dcodes a single string to a list of strings
+"""
+def decode(s):
+    strs = []
+    is_sep = False
+    sep_count = 0
+    cs = ''
+    for c in s:
+        if c == '|':
+            if not is_sep:
+                is_sep = True
+            sep_count += 1
+            continue
+        if is_sep:
+            is_sep=False
+            cs += '|'*(sep_count//2)
+            if sep_count%2 == 1:
+                strs.append(cs)
+                cs = ''
+            sep_count=0
+        cs += c
+    strs.append(cs)
+    return strs
+
+
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -227,9 +263,15 @@ if __name__ == '__main__':
     print(ans,"\n",len(ans))
     print([0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4,1,2,2,3,2,3,3,4,2,3,3,4,3,4,4,5,1,2,2,3,2,3,3,4,2,3,3,4,3,4,4,5,2,3,3,4,3,4,4,5,3,4,4,5,4,5,5,6,1])
     """
-    trie = Trie()
-    trie.insert("apples")
-    print(trie.search("apples"))
+    i = ['Hi there!', 'how are|you||doing|||there?']
+    ec = encode(i)
+    print(ec)
+    dc = decode(ec)
+    print(dc)
+    print(i)
+    # trie = Trie()
+    # trie.insert("apples")
+    # print(trie.search("apples"))
     #print(noon([1,2,8,5, 5], 0)) [1,1,2,2, 2, 4]
     # {1: 2, 2: 3, 4: 1}
     #print([i for i in test([1,1,2,2,2,4])])
