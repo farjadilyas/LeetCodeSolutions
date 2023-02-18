@@ -30,24 +30,19 @@
 
 
 def lengthOfLongestSubstring(self, s: str) -> int:
+    # Latest index of occurrence for each character
     occurance_idx = [-1] * 128
+    # Store the occurrence index of the head of the sliding window
     attempt_idx = 0
-
-    # Create array to keep track of latest index of occurence of each character
-    attempt = length = max_length = i = 0
-    for c in s:
-        ch_id = ord(c)
-        if occurance_idx[ch_id] >= attempt_idx:
-            max_length = max(max_length, length)
-            attempt += 1
-
-            # Count the unique characters after the previous occurence of the duplicate character
-            attempt_idx = occurance_idx[ch_id]
-            length = i - attempt_idx - 1
-
-        length += 1
-        occurance_idx[ch_id] = i
-        i += 1
-
-    max_length = max(max_length, length)
-    return max_length
+    max_len = 0
+    for i, c in enumerate(s):
+        c_id = ord(c)
+        # If the current character occurred beyond the head of the current window, it is duplicate
+        # Calculate the max length of this expansion of the window, advance the head of the window just beyond the
+        # previous occurrence of the duplicate character so it is valid again
+        if occurance_idx[c_id] >= attempt_idx:
+            max_len = max(max_len, i - attempt_idx)
+            attempt_idx = occurance_idx[c_id] + 1
+        occurance_idx[c_id] = i
+    max_len = max(max_len, len(s) - attempt_idx)
+    return max_len

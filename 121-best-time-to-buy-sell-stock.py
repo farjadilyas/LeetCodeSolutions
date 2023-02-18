@@ -7,12 +7,10 @@
 
 
 def maxProfit(self, prices: List[int]) -> int:
-    mn = prices[0]
-    pf = 0
+    minimum = prices[0]
+    profit = 0
     for price in prices:
-        if price - mn > pf:
-            pf = price - mn
-        pf = max(pf, price - mn)
-        if price < mn:
-            mn = price
-    return pf
+        profit = max(profit, price - minimum)
+        if price < minimum:
+            minimum = price
+    return profit

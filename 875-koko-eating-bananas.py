@@ -1,6 +1,6 @@
 """
   875. Koko Eating Bananas
-  [ Medium ] | [ 53.5% ] -- Solved 31/07/2022 -- [ Array, Binary Search ]
+  [ Medium ] | [ 53.5% ] -- Solved 12/02/2023 -- [ Array, Binary Search ]
   ----------- {{ SUBMISSION STATS }} --------------
   FASTER THAN:90.32%
   MEMORY USAGE: 97.34%
