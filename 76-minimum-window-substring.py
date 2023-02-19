@@ -1,6 +1,6 @@
 """
   211. Minimum Window Substring
-  [ Hard ] | [ 40.8% ] -- Solved 13/02/2023 -- [ Sliding Window, Hash Table, String ]
+  [ Hard ] | [ 40.8% ] -- Solved 19/02/2023 -- [ Sliding Window, Hash Table, String ]
   ----------- {{ SUBMISSION STATS }} --------------
   FASTER THAN:99.4%
   MEMORY USAGE: 76.9%
