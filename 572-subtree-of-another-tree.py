@@ -1,6 +1,6 @@
 """
   211. Design Add and Search Words Data Structure
-  [ Medium ] | [ 45.8% ] -- Solved 12/02/2023 -- [ DFS, Trie ]
+  [ Medium ] | [ 45.8% ] -- Solved 25/02/2023 -- [ DFS, Trie ]
 
   Problem Statement:
   - Self explanatory

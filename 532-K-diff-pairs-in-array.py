@@ -28,29 +28,14 @@
   Space Complexity; O(N)
 """
 
+from collections import Counter
+
 # LeetCode 532 Version
-def findPairs(self, arr: List[int], k: int) -> int:
-    count = 0
-    hm = {}
-    for e in arr:
-        if k == 0 and e in hm and hm[e] != 3:
-            hm[e] = 3
-            count += 1
-        if e not in hm:
-            hm[e] = 0
-        if k == 0:
-            continue
-        if e - k in hm and hm[e - k] < 2 and hm[e] % 2 == 0:
-            hm[e] = hm[e] | 1
-            hm[e - k] = hm[e - k] | 2
-            count += 1
-            # print(f"counting {e}, {e-k}")
-        if e + k in hm and hm[e] < 2 and hm[e + k] % 2 == 0:
-            hm[e] = hm[e] | 2
-            hm[e + k] = hm[e + k] | 1
-            count += 1
-            # print(f"counting {e}, {e+k}")
-    return count
+def findPairs(self, nums: List[int], k: int) -> int:
+    hm = Counter(nums)
+    if k == 0:
+        return sum(v > 1 for v in hm.values())
+    return sum(e + k in hm for e in hm)
 
 
 # Variant found in interview, where a and b don't have to be distinct elements in the array
