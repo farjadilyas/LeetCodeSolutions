@@ -16,7 +16,7 @@
 def goodNodes(self, root: TreeNode) -> int:
     if not root:
         return 0
-    return self.go(root, -10001)
+    return self.preorder(root, -10001)
 
 
 def go(self, root, mx):
@@ -25,7 +25,7 @@ def go(self, root, mx):
         res = 1
         mx = root.val
     if root.left:
-        res += self.go(root.left, mx)
+        res += self.preorder(root.left, mx)
     if root.right:
-        res += self.go(root.right, mx)
+        res += self.preorder(root.right, mx)
     return res

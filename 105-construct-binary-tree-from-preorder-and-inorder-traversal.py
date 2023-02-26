@@ -70,10 +70,10 @@ def buildTree(self, preorder: List[int], inorder: List[int]) -> Optional[TreeNod
     self.preorder = preorder
     self.limit = len(preorder)
     root = TreeNode()
-    self.do_preorder(0, 0, -1, self.limit, root)
+    self.do_preorder(0, -1, self.limit, root)
     return root
 
-def do_preorder(self, cidx, ridx, mn, mx, root):
+def do_preorder(self, cidx, mn, mx, root):
     cur = self.preorder[cidx]
     root.val = cur
     inorder_idx = self.hm[cur]
@@ -85,13 +85,13 @@ def do_preorder(self, cidx, ridx, mn, mx, root):
         child = self.preorder[cidx + 1]
         if self.hm[child] < inorder_idx:
             root.left = TreeNode()
-            cidx = self.do_preorder(cidx + 1, 1 + (2 * ridx), mn, min(mx, inorder_idx), root.left)
+            cidx = self.do_preorder(cidx + 1, mn, min(mx, inorder_idx), root.left)
 
     if cidx + 1 < self.limit and max(mn, inorder_idx) < self.hm[self.preorder[cidx + 1]] < mx:
         child = self.preorder[cidx + 1]
         if self.hm[child] > inorder_idx:
             root.right = TreeNode()
-            cidx = self.do_preorder(cidx + 1, 2 + (2 * ridx), max(mn, inorder_idx), mx, root.right)
+            cidx = self.do_preorder(cidx + 1, max(mn, inorder_idx), mx, root.right)
     return cidx
 
 class TreeNode:
