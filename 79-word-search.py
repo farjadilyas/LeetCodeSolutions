@@ -19,7 +19,7 @@ class Solution:
         directions = [(0, -1), (-1, 0), (0, 1), (1, 0)]
         target, board, ly, lx = len(word), board, len(board), len(board[0]) if board else 0
 
-        # These are hacks that exploit the nature of the testcases to rule out impossible scenarios / inform the start of the search
+        # Optional: These are hacks that exploit the nature of the testcases to rule out impossible scenarios / inform the start of the search
         if len(word) > ly * lx: return False
         if not (cnt := Counter(word)) <= Counter(chain(*board)):
             return False
