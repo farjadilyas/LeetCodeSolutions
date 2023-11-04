@@ -39,4 +39,3 @@ class Solution:
                     mx = max(mx, peak_height * (i - peak_index))
                 stack.append((height, peak_index))
         return mx
-
