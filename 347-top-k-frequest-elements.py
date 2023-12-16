@@ -38,3 +38,58 @@ def topKFrequent(self, nums: List[int], k: int) -> List[int]:
     # hp = sorted(hm.values(), key=lambda x: x[0], reverse=True)
     # return [i[1] for i in hp[:k]]
 
+
+"""
+    Quickselect approach
+    - Build freq dist of nums, need to sort the unique keys based on their frequencies
+    - Alter quickselect partition to compare using frequencies instead of values themselves
+"""
+from collections import Counter
+import random
+
+
+class Solution:
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        count = Counter(nums)
+        unique = list(count.keys())
+
+        def partition(left, right, pivot_index):
+            pivot_frequency = count[unique[pivot_index]]
+
+            # Move pivot to the end
+            unique[right], unique[pivot_index] = unique[pivot_index], unique[right]
+
+            store_index = left
+            for i in range(left, right):
+                # If the element encountered is less than the pivot
+                # swap it with the first unswapped element that is greater than the pivot
+                if count[unique[i]] < pivot_frequency:
+                    unique[store_index], unique[i] = unique[i], unique[store_index]
+                    # Move store_index+1, +1 is guaranteed to give an element that is supposed to be in
+                    # the greater partition, because if there were elements that were supposed to be in the left,
+                    # they would have been swapped with store index
+                    store_index += 1
+            # At the end of the loop, store_index will mark the beginning of the greater subarray
+            unique[right], unique[store_index] = unique[store_index], unique[right]
+            # store_index now marks the correct index of the pivot in the final array
+            return store_index
+
+        def quickselect(left, right, k_smallest):
+            if left == right:
+                return
+
+            pivot_index = random.randint(left, right)
+            pivot_index = partition(left, right, pivot_index)
+            # eg: 6 smallest, pivot works for us if its at index 6, meaning the 6 smallest elements are at 0-5
+            if k_smallest == pivot_index:
+                return
+            # we picked too many elements in the smallest array, pick another pivot
+            elif k_smallest < pivot_index:
+                quickselect(left, pivot_index - 1, k_smallest)
+            else:
+                quickselect(pivot_index + 1, right, k_smallest)
+
+        n = len(unique)
+        # k function param is k largest, n-k gives ksmallest
+        quickselect(0, n - 1, n - k)
+        return unique[n - k:]

@@ -21,15 +21,16 @@
   Space Complexity: O(1)
 """
 
-def productExceptSelf(self, nums: List[int]) -> List[int]:
-    l = len(nums)
-    res = [0 for _ in range(l)]
-    res[0] = nums[0]
-    for i in range(1, l):
-        res[i] = res[i - 1] * nums[i]
-    rev_run = 1
-    for i in range(l - 1, 0, -1):
-        res[i] = res[i - 1] * rev_run
-        rev_run *= nums[i]
-    res[0] = rev_run
-    return res
+
+class Solution:
+    def productExceptSelf(self, nums: List[int]) -> List[int]:
+        ln = len(nums)
+        res = [1 for _ in range(ln)]
+        running_left = nums[0]
+        running_right = nums[-1]
+        for i in range(1, ln):
+            res[i] *= running_left
+            res[ln - i - 1] *= running_right
+            running_left *= nums[i]
+            running_right *= nums[ln - i - 1]
+        return res

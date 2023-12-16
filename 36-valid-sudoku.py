@@ -18,6 +18,8 @@
   Time Complexity: O(N)
   Space Complexity: O(N)
 """
+from typing import List
+
 
 def isValidSudoku(self, board: List[List[str]]) -> bool:
     tt = [[[False for _ in range(9)] for i in range(9)] for j in range(3)]
@@ -39,4 +41,33 @@ def isValidSudoku(self, board: List[List[str]]) -> bool:
             if tt[0][bid][cnum] or tt[1][row][cnum] or tt[2][col][cnum]:
                 return False
             tt[0][bid][cnum] = tt[1][row][cnum] = tt[2][col][cnum] = True
+    return True
+
+
+"""
+  Here, we remove a dimension from the 3-d array we used to keep track of the row, col, box sets
+  We replace the innermost dimension with numbers, and use bit manipulation to keep track of which numbers are in the
+  set
+  
+  - When a number is encountered, create a mask for it using one-hot encoding
+  - It already exists in a set if for eg: rowSet & valueMask != 0
+  - To add it to a set, do this: rowSet |= valueMask
+  
+  - This decreases space used, and also practically decreases the runtime of this solution
+"""
+
+
+def isValidSudokuImp2(board: List[List[str]]) -> bool:
+    rowSet, colSet, boxSet = ([0 for _ in range(9)] for i in range(3))
+    for row in range(9):
+        for col in range(9):
+            if board[row][col] == '.':
+                continue
+            bid = (row - row % 3) + (col // 3)
+            valueMask = 2 ** (ord(board[row][col]) - 49)
+            if (rowSet[row] & valueMask) | (colSet[col] & valueMask) | (boxSet[bid] & valueMask):
+                return False
+            rowSet[row] |= valueMask
+            colSet[col] |= valueMask
+            boxSet[bid] |= valueMask
     return True
