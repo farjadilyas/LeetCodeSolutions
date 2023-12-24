@@ -18,7 +18,7 @@
   - The three passed can be combined into one with some conditions
 
   Time Complexity: O(N)
-  Space Complexity: O(1)
+  Space Complexity: O(N) - array for storing forward pass values
 """
 
 
@@ -52,3 +52,52 @@ def trap(self, height: List[int]) -> int:
         if j < m:
             total += ans[j]
     return total
+
+
+"""
+  OPTIMAL SOLUTION - O(N) time - O(1) space
+  - Two pointer solution
+  - Two pointers point to the edge of the left and right subset that have had their solutions calculated
+  - Every move of a pointer finds the solution for the new position the pointer points to
+  
+  - Start with two pointers on 0 and N-1
+  - Let leftMax hold the max value pointed to by leftPtr so far, same for rightMax
+  - Move the pointer with the smaller value forward
+  - EXPLANATION:
+    - lets say left subarray is [0,1,2] and right subarray is [3,1]
+    - left ptr at two should move forward because the formula for the answer at leftPtr+1 is:
+      - min(leftMax, rightMax) - height[i]
+      - if left ptr moves forward..
+        - we know leftMax for i for sure (no elements left)
+        - leftPtr would only move to the right if the right side had a bigger element
+        - hence: rightMax > leftMax -> min(leftMax, rightMax) = leftMax
+        - hence we know all we need to calculate the answer for the new leftPtr position
+  - Once you have moved one of the pointers, make sure to update the respective max for the Ptr
+  
+  KEY INSIGHT:
+  - First its important to realise the formula for the answer at a point
+  - ans[i] = min(leftMax, rightMax) - height[i]
+  - We needed the space since we could keep one running total w.r.t the iteration, but the total in the other
+    direction needed to be memoized
+  - Using two pointers, we can reach the elements that are first limited by ONE OF the running totals so far
+  - Realise that the limiting total will definitely be less than the potential total in the opp direction
+    if we move the smaller pointer
+  - Hence, we resolve the left and right total dependency in linear time without needing the opposing total memoized
+"""
+
+
+class Solution:
+    def trap(self, height: List[int]) -> int:
+        start, end = 0, len(height)-1
+        leftMax, rightMax = height[start], height[end]
+        ans = 0
+        while start < end:
+            if height[start] > height[end]:
+                end -= 1
+                ans += max(rightMax - height[end], 0)
+                rightMax = max(rightMax, height[end])
+            else:
+                start += 1
+                ans += max(leftMax - height[start], 0)
+                leftMax = max(leftMax, height[start])
+        return ans
