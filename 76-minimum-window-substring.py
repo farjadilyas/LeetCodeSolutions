@@ -40,6 +40,36 @@
 """
 
 
+"""
+  UPDATE - NEW, MUCH SIMPLER SOLUTION BELOW - FIND OG SOLUTION AT THE BOTTOM
+"""
+
+
+class Solution:
+    def minWindow(self, s: str, t: str) -> str:
+        counts = [0 for _ in range(128)]
+        for c in t:
+            counts[ord(c)] += 1
+        num_matches = sum(not c for c in counts)
+        start = 0
+        min_start, min_end = 0, 100_000
+        for end in range(len(s)):
+            counts[ord(s[end])] -= 1
+            if counts[ord(s[end])] == 0:
+                num_matches += 1
+            while start < len(s) and counts[ord(s[start])] < 0:
+                counts[ord(s[start])] += 1
+                start += 1
+            if num_matches == 128 and end - start < min_end - min_start:
+                min_start, min_end = start, end
+        return s[min_start:min_end+1] if min_end != 100_000 else ""
+
+
+"""
+  ORIGINAL SOLUTION
+"""
+
+
 class Solution:
     def minWindow(self, s: str, t: str) -> str:
         zeros = target = start = 0

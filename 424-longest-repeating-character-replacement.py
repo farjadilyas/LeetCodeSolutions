@@ -34,17 +34,14 @@
 
 class Solution:
     def characterReplacement(self, s: str, k: int) -> int:
-        head = tail = 0
-        counts =[0 for _ in range(26)]
-        max_len = 0
-        for c in s:
-            counts[ord(c)-65] += 1
-            if tail-head+1 - max(counts) > k:
-                max_len = max(max_len, tail-head)
-            # Shrink window
-            while tail-head+1 - max(counts) > k:
-                counts[ord(s[head])-65]-=1
-                head+=1
-            tail += 1
-        max_len = max(max_len, tail-head)
-        return max_len
+        start = end = 0
+        counts = [0] * 26
+        offset = ord('A')
+        ls = len(s)
+        while end < ls:
+            counts[ord(s[end])-offset] += 1
+            if end-start+1 - max(counts) > k:
+                counts[ord(s[start])-offset] -= 1
+                start += 1
+            end += 1
+        return end - start
