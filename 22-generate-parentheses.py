@@ -12,14 +12,24 @@
     - Only allow adding closing bracket if there is some available matching opening bracket
 """
 
-def generateParenthesis(self, n: int) -> List[str]:
-    ans = []
-    def recurs(cur, o, c):
-        if n == c:
-            return ans.append(cur)
-        if o < n:
-            recurs(cur+'(', o+1, c)
-        if o-c > 0:
-            recurs(cur+')', o, c+1)
-    recurs('', 0, 0)
-    return ans
+
+class Solution:
+    def generateParenthesis(self, n: int) -> List[str]:
+        stack, result = [], []
+        op, cl = '(', ')'
+
+        def form(num_pairs_allowed, num_pairs_open):
+            if not num_pairs_allowed and not num_pairs_open:
+                result.append(''.join(stack))
+
+            if num_pairs_allowed:
+                stack.append(op)
+                form(num_pairs_allowed - 1, num_pairs_open + 1)
+                stack.pop()
+            if num_pairs_open:
+                stack.append(cl)
+                form(num_pairs_allowed, num_pairs_open - 1)
+                stack.pop()
+
+        form(n, 0)
+        return result

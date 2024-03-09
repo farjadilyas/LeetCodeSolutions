@@ -88,16 +88,15 @@ def trap(self, height: List[int]) -> int:
 
 class Solution:
     def trap(self, height: List[int]) -> int:
-        start, end = 0, len(height)-1
-        leftMax, rightMax = height[start], height[end]
-        ans = 0
+        start, end = 0, len(height) - 1
+        leftMax = rightMax = ans = 0
         while start < end:
             if height[start] > height[end]:
-                end -= 1
-                ans += max(rightMax - height[end], 0)
                 rightMax = max(rightMax, height[end])
+                ans += rightMax - height[end]
+                end -= 1
             else:
-                start += 1
-                ans += max(leftMax - height[start], 0)
                 leftMax = max(leftMax, height[start])
+                ans += leftMax - height[start]
+                start += 1
         return ans

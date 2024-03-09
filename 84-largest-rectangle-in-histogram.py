@@ -23,19 +23,13 @@
 
 class Solution:
     def largestRectangleArea(self, heights: List[int]) -> int:
-        # 1 1 1 1 1 4 1
-        # 1 1 1 1 1 4 4
-        # 1 1 1 1 1 2 2 4
-        stack = [(heights[0], 0)]
+        stack = []
         heights.append(0)
-        mx = heights[0]
-        for i in range(1, len(heights)):
-            height = heights[i]
-            if height > stack[-1][0]:
-                stack.append((height, i))
-            elif height < stack[-1][0]:
-                while stack and height < stack[-1][0]:
-                    peak_height, peak_index = stack.pop()
-                    mx = max(mx, peak_height * (i - peak_index))
-                stack.append((height, peak_index))
-        return mx
+        max_area = 0
+        for i in range(len(heights)):
+            running_start = i
+            while stack and stack[-1][0] > heights[i]:
+                running_height, running_start = stack.pop()
+                max_area = max(max_area, running_height * (i - running_start))
+            stack.append((heights[i], running_start))
+        return max_area
