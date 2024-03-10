@@ -1,6 +1,6 @@
 """
-  153. Find Minimum in Rotated Sorted Array
-  [ Medium ] | [ 48.2% ] -- Solved 31/07/2022 -- [ Array, Binary Search ]
+  22. Generate Parentheses
+  [ Medium ] | [ 74.3% ] -- Solved 31/07/2022 -- [ Array, Binary Search ]
 
   Problem Statement:
   - Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
@@ -10,6 +10,18 @@
   - Use some conditions to limit the tree to only possibly valid combos
     - Only allow adding opening bracket if it is available
     - Only allow adding closing bracket if there is some available matching opening bracket
+
+  Alternate Approach:
+  - Note: this approach is not better, and in some ways (complexity, practical cost) worse that the previous one
+  - Its possible to generate these parentheses using a formula with the same formulation as the Catalan Number formula
+  - F(N) = "(" + F(X) + ")" + F(N-1-X) where X=1..N-1
+  - Can simply write this as a recursive function
+
+  Time Complexity: O(4^n / sqrt(n))
+    - Explanation: number of valid parentheses strings with 'n' pairs is equal to the nth catalan numbers
+    - nth catalan number is asymptotically bound by 4^n/(n*sqrt(n))
+    - multiply the bound by n to represent the work done to construct (join) each string of length 2n
+  Space Complexity: O(n) - max recursion depth is 2n
 """
 
 

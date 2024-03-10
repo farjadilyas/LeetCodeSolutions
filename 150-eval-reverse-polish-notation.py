@@ -16,18 +16,18 @@
   Space Complexity: O(N)
 """
 
-def evalRPN(self, tokens: List[str]) -> int:
-    stack = []
-    for token in tokens:
-        if token == '+':
-            stack.append(stack.pop() + stack.pop())
-        elif token == '-':
-            stack.append(-stack.pop() + stack.pop())
-        elif token == '*':
-            stack.append(stack.pop() * stack.pop())
-        elif token == '/':
-            second = stack.pop()
-            stack.append(int(stack.pop() / second))
-        else:
-            stack.append(int(token))
-    return stack[0]
+
+class Solution:
+    def __init__(self):
+        self.op_map = {
+            '+': lambda y, x: x + y,
+            '-': lambda y, x: x - y,
+            '*': lambda y, x: x * y,
+            '/': lambda y, x: int(x / y)
+        }
+
+    def evalRPN(self, tokens: List[str]) -> int:
+        stack = []
+        for token in tokens:
+            stack.append(self.op_map[token](stack.pop(), stack.pop()) if token in self.op_map else int(token))
+        return stack[0]
