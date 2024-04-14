@@ -4,6 +4,24 @@
     ---------- {{ SUBMISSION STATS }} ---------------
     FASTER THAN: 98.53%
     MEMORY USAGE: 83.98%
+
+    INTUITION:
+      - This problem uses the 'Previous Smaller Element' as a subproblem
+      - Every candidate rectangle is limited by the height of one bar
+      - For each bar, calculate its maximal rectangle (the rectangle whose height this bar limits)
+        by looking to its left and right
+      - To get the left bound of the rectangle, you need the previous smaller element
+      - To get the right bound, you need the next smaller element
+      - The sub-problem is solved using a monotonic stack
+      - The optimal solution below (described below) simply removes the need for the right run by a clever change..
+        - Notice that in the previous smaller element solution, a stack entry is popped when a smaller element than it is
+          encountered
+        - This newly encountered element is, in fact, the answer for the next smaller element!
+        - So we can just implement the solution for the previous smaller element, and when popping from the stack we also
+          understand the next smaller element. Hence, the maximal rectangle for the element being popped is calculated!
+        - We can add append a dummy zero entry in the histogram to force all calculations to be completed
+
+    APPROACH:
     Maintain an increasing monotonic stack - each element of this stack represents running totals that are still being explored
     - stack entries are in the following format: (height, starting index of the running total)
 
@@ -33,3 +51,27 @@ class Solution:
                 max_area = max(max_area, running_height * (i - running_start))
             stack.append((heights[i], running_start))
         return max_area
+
+
+# TODO: implement the divide and conquer approach
+# TODO: check out the segment tree approach
+
+
+"""
+  For the recursive approach - a note on the complexity analysis:
+  - Average case (minimum in the middle):
+     - First level goes through N elements to search for minimum
+     - Second level goes through a total of N-1 elements
+     - Third level goes through a total of N-3 elements (draw it out)
+     
+     - sequence is like: N, N-1, N-3, N-7..
+     - change it to (N, N-2, N-4, N-8...) + logN - 1
+     - sequence has logN elements
+     - N part becomes NlogN
+     - 0, -2, -4.. part becomes -(2^(log(N)-1)) --> -(N-1)
+     - overall formula is: Nlog(N) - (N - 1) + (logN - 1)
+         - final: Nlog(N) + log(N) - N ----> O(Nlog(N))
+  - Worst case (if input is sorted)
+    - Sequence in this case is N, N-1, N-2
+    - or 1,2,3,..,N --> N(N-1)/2 ----> O(N^2)
+"""

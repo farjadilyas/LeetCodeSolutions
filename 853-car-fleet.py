@@ -29,10 +29,12 @@
   - This can be modelled by a monotonic stack by calculating time to target in the same sorted order and pushing it to
     a monotonically increasing stack
   - As soon as a greater value is encountered, it wipes out the smaller values towards the top of the stack
+  - But there's no need to actually maintain a stack, since we just need to know the number of 'wipe-outs'
 
   Time Complexity: O(NlogN)
-  Space Complexity: O(N)
+  Space Complexity: O(N) - used for argsort
 """
+
 
 def carFleet(self, target: int, position: List[int], speed: List[int]) -> int:
     pairs = sorted(zip(position, speed), reverse=True)

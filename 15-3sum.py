@@ -46,3 +46,20 @@ class Solution:
   - Practically, no-sort is slower, less obvious, and less flexible if you need to come up with a solution for an
     alternative version of 3sum, but its a good exercise
 """
+
+
+class Solution:
+    def threeSum(self, nums: List[int]) -> List[List[int]]:
+        outer_set = set()
+        hm = {num: None for num in nums}
+        res = set()
+        for i in range(len(nums)):
+            if nums[i] in outer_set:
+                continue
+            outer_set.add(nums[i])
+            for j in range(i+1, len(nums)):
+                target = -nums[i]-nums[j]
+                if hm.get(target) == i:
+                    res.add(tuple(sorted([nums[i], nums[j], target])))
+                hm[nums[j]] = i
+        return list(res)
