@@ -43,6 +43,10 @@ def topKFrequent(self, nums: List[int], k: int) -> List[int]:
     Quickselect approach
     - Build freq dist of nums, need to sort the unique keys based on their frequencies
     - Alter quickselect partition to compare using frequencies instead of values themselves
+    
+    Time Complexity: Avg case O(N) (N+N/2+N/4+...1 --> 2^0+2^1...2^(logN) -> 2^(log(N)+1)-1 -> 2N-1 -> O(N)
+        Worst Case: O(N^2)
+    Space complexity: O(N) - up to O(N) in case all elements are unique
 """
 from collections import Counter
 import random
@@ -93,3 +97,27 @@ class Solution:
         # k function param is k largest, n-k gives ksmallest
         quickselect(0, n - 1, n - k)
         return unique[n - k:]
+
+
+"""
+    Bucket sort approach
+    Max frequency is N, create N buckets for each possible frequency from 1 to N
+    Get the freq dist, loop over it and add the num to the correct bucket based on its frequency
+    Traverse over the buckets in descending order and get the first k numbers
+    
+    Time complexity: O(N)
+    Space complexity: O(N)
+"""
+class Solution:
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        freq_dist = Counter(nums)
+        buckets = [[] for i in range(len(nums)+1)]
+
+        for num, freq in freq_dist.items():
+            buckets[freq].append(num)
+        res = []
+        for i in range(len(buckets)-1, -1, -1):
+            for num in buckets[i]:
+                res.append(num)
+            if len(res) >= k:
+                return res
