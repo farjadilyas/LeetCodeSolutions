@@ -29,33 +29,31 @@
 
 class Solution:
     def checkInclusion(self, s1: str, s2: str) -> bool:
-        od = [None for _ in range(26)]
-        target = 0
-        for c in s1:
-            c_id = ord(c) - 97
-            if od[c_id] is None:
-                od[c_id] = 1
-                target += 1
-            else:
-                od[c_id] += 1
-
-        start = zeros = 0
-        for end, c in enumerate(s2):
-            c_id = ord(c) - 97
-            # Shrink window if an invalid character is found (not present in string, or one too many)
-            while (od[c_id] is None and start != end + 1) or (od[c_id] is not None and od[c_id] <= 0):
-                h_id = ord(s2[start]) - 97
-                if od[h_id] is not None:
-                    if od[h_id] == 0:
-                        zeros -= 1
-                    od[h_id] += 1
-                start += 1
-            # Once window is valid, update it with the current char
-            if od[c_id] is not None:
-                od[c_id] -= 1
-                if od[c_id] == 0:
-                    zeros += 1
-
-            if zeros == target:
+        offset = ord('a')
+        counts = [0] * 26
+        if len(s2) < len(s1):
+            return False
+        for i in range(len(s1)):
+            counts[ord(s1[i]) - offset] += 1
+            counts[ord(s2[i]) - offset] -= 1
+        num_ones = sum(bool(c) for c in counts)
+        start = 0
+        end = len(s1) - 1
+        while end < len(s2) - 1:
+            if not num_ones:
                 return True
-        return False
+            outgoing_idx = ord(s2[start]) - offset
+            counts[outgoing_idx] += 1
+            if counts[outgoing_idx] == 1:
+                num_ones += 1
+            elif counts[outgoing_idx] == 0:
+                num_ones -= 1
+            start += 1
+            end += 1
+            incoming_idx = ord(s2[end]) - offset
+            counts[incoming_idx] -= 1
+            if counts[incoming_idx] == -1:
+                num_ones += 1
+            elif counts[incoming_idx] == 0:
+                num_ones -= 1
+        return not num_ones
