@@ -14,7 +14,7 @@ def rotate(nums: list[int], k: int) -> None:
         nums[i] = tmp[i]
 
 
-def rotate_optimal(nums: list[int], k: int) -> None:
+def rotate_optimal_reversed(nums: list[int], k: int) -> None:
     """
     Conceptually break down array in to 2 pieces a,b like [--a--, --b--] where --b-- is of length k%len(nums)
     After k right-rotations, note that the array will look like [--b--, --a--]
@@ -31,3 +31,36 @@ def rotate_optimal(nums: list[int], k: int) -> None:
         nums[i], nums[k - i - 1] = nums[k - i - 1], nums[i]
     for i in range((len(nums) - k) // 2):
         nums[k + i], nums[-i - 1] = nums[-i - 1], nums[k + i]
+
+
+def rotate_optimal_cyclic_replacements(nums: list[int], k: int) -> None:
+    """
+    - This approach places each element in its desired place one by one.
+    - If you place one element in its desired place, it displaces the next element
+    - So place that element in its desired place and so on
+    - If this 'cyclic replacement' breaks (if n%k==0, see e.g. below), then move a step forward and continue the cyclic
+      replacements
+    """
+    size = len(nums)
+    k = k % size
+    start = count = 0
+    # count tracks how many elements have been put in their final desired place
+    while count < size:
+        # current set to the start of the new run
+        current = start
+        prev = nums[current]
+        while True:
+            # move current to the index where prev should be
+            current = (current+k) % size
+            temp = nums[current]
+            nums[current] = prev
+            prev = temp
+            count += 1
+            if current == start:
+                # Happens when n%k == 0 (otherwise one outer loop will take the count to N)
+                # at this point the inner loop has replaced n/k elements
+                # so move current to the right by 1 and start again
+                # eg: [1,2,3,4] k=2 - after one inner loop: [3,2,1,4], current === start == 0
+                # so current = start + 1, after another loop: [3,4,1,2] (the answer)
+                start += 1
+                break
