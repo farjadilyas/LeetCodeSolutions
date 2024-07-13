@@ -33,3 +33,43 @@ class MinStack:
 
     def getMin(self) -> int:
         return self.stack[-1][1]
+
+
+class MinStackOptimal:
+    """
+    This MinStack doesn't store a min with every single stack entry
+    Instead, it stores a monotonically decreasing min stack with each value that breaks the previous min's record
+    - This min_stack also contains the counts of the number of times that min value has been encountered
+    - This is required so that if there are multiple elements that are all the min, popping the latest once doesn't
+      pop the min stack entry. Instead, we decrement the count var for the min val in the min_stack entry and only
+      pop from the min_stack when the count of the min element is zero
+    - With this, we only keep the min entries we absolutely need to instead of storing min entries for each stack entry
+
+    Time Complexity of all ops: O(1)
+    Space Complexity: O(N) - when input is in decreasing order
+    """
+
+    def __init__(self):
+        self.stack = []
+        self.min_stack = []
+
+    def push(self, val: int) -> None:
+        self.stack.append(val)
+        if not self.min_stack or val < self.min_stack[-1][0]:
+            self.min_stack.append([val, 1])
+        elif val == self.min_stack[-1][0]:
+            self.min_stack[-1][1] += 1
+
+    def pop(self) -> None:
+        val = self.stack.pop()
+        if val != self.min_stack[-1][0]:
+            return
+        self.min_stack[-1][1] -= 1
+        if self.min_stack[-1][1] == 0:
+            self.min_stack.pop()
+
+    def top(self) -> int:
+        return self.stack[-1]
+
+    def getMin(self) -> int:
+        return self.min_stack[-1][0]
