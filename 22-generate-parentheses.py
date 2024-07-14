@@ -27,21 +27,19 @@
 
 class Solution:
     def generateParenthesis(self, n: int) -> List[str]:
-        stack, result = [], []
-        op, cl = '(', ')'
+        answer = []
+        stack = []
 
-        def form(num_pairs_allowed, num_pairs_open):
-            if not num_pairs_allowed and not num_pairs_open:
-                result.append(''.join(stack))
-
-            if num_pairs_allowed:
-                stack.append(op)
-                form(num_pairs_allowed - 1, num_pairs_open + 1)
+        def form(num_opened, num_closed):
+            if num_opened == num_closed == n:
+                answer.append(''.join(stack))
+            if num_opened < n:
+                stack.append('(')
+                form(num_opened+1, num_closed)
                 stack.pop()
-            if num_pairs_open:
-                stack.append(cl)
-                form(num_pairs_allowed, num_pairs_open - 1)
+            if num_closed < num_opened:
+                stack.append(')')
+                form(num_opened, num_closed+1)
                 stack.pop()
-
-        form(n, 0)
-        return result
+        form(0, 0)
+        return answer
