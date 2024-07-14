@@ -73,17 +73,13 @@ def dailyTemperatures(self, temperatures: List[int]) -> List[int]:
   Time Complexity: O(N)
   Space Complexity: O(1) 
 """
-def dailyTemperatures(self, temperatures: List[int]) -> List[int]:
+
+
+def dailyTemperaturesOptimal(temperatures: list[int]) -> list[int]:
     answers = [0 for _ in range(len(temperatures))]
-    running_warmest = temperatures[-1]
     for i in range(len(temperatures)-2, -1, -1):
-        # If hottest so far, set ans to zero, update warmest
-        if temperatures[i] > running_warmest:
-            running_warmest = temperatures[i]
-        # If answer is available, jump using answers array
-        elif temperatures[i] < running_warmest:
-            jumps = 1
-            while temperatures[i] >= temperatures[i+jumps]:
-                jumps += answers[i+jumps]
-            answers[i] = jumps
+        jumps = 1
+        while temperatures[i] >= temperatures[i+jumps] and answers[i+jumps] != 0:
+            jumps += answers[i+jumps]
+        answers[i] = 0 if temperatures[i] >= temperatures[i+jumps] else jumps
     return answers
