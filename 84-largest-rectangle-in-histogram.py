@@ -3,7 +3,7 @@
     [ Hard ] | [ 39.3% ] -- Solved 04/11/2023 -- [ Array, Monotonic Stack ]
     ---------- {{ SUBMISSION STATS }} ---------------
     FASTER THAN: 98.53%
-    MEMORY USAGE: 83.98%
+    MEMORY USAGE: 96.68%
 
     INTUITION:
       - This problem uses the 'Previous Smaller Element' as a subproblem
@@ -37,41 +37,175 @@
     - Finally, at the end of the iteration, there may be running totals that have not been concluded, an easy way to handle this is to add a dummy 0 entry at the end of the heights array
     - This will effectively end all running totals, so they'll be taken into consideration
 """
+from typing import List, Callable, Any
 
 
-class Solution:
+class OptimalSolution:
     def largestRectangleArea(self, heights: List[int]) -> int:
         stack = []
         heights.append(0)
         max_area = 0
         for i in range(len(heights)):
             running_start = i
-            while stack and stack[-1][0] > heights[i]:
+            while stack and stack[-1][0] >= heights[i]:
                 running_height, running_start = stack.pop()
                 max_area = max(max_area, running_height * (i - running_start))
             stack.append((heights[i], running_start))
         return max_area
 
 
-# TODO: implement the divide and conquer approach
-# TODO: check out the segment tree approach
+class BruteForceSolution:
+    def largestRectangleArea(self, heights: List[int]) -> int:
+        """
+        Slightly better than the actual brute force which calculates the minimum inside the nested loop
+        """
+        max_area = 0
+        for i in range(len(heights)):
+            min_h = 1_000_000
+            for j in range(i, len(heights)):
+                min_h = min(min_h, heights[j])
+                max_area = max(max_area, (j-i+1) * min_h)
+        return max_area
 
 
-"""
-  For the recursive approach - a note on the complexity analysis:
-  - Average case (minimum in the middle):
-     - First level goes through N elements to search for minimum
-     - Second level goes through a total of N-1 elements
-     - Third level goes through a total of N-3 elements (draw it out)
-     
-     - sequence is like: N, N-1, N-3, N-7..
-     - change it to (N, N-2, N-4, N-8...) + logN - 1
-     - sequence has logN elements
-     - N part becomes NlogN
-     - 0, -2, -4.. part becomes -(2^(log(N)-1)) --> -(N-1)
-     - overall formula is: Nlog(N) - (N - 1) + (logN - 1)
-         - final: Nlog(N) + log(N) - N ----> O(Nlog(N))
-  - Worst case (if input is sorted)
-    - Sequence in this case is N, N-1, N-2
-    - or 1,2,3,..,N --> N(N-1)/2 ----> O(N^2)
-"""
+class DivideAndConquerSolution:
+    """
+      For the recursive approach - a note on the complexity analysis:
+      - Average case (minimum in the middle):
+         - First level goes through N elements to search for minimum
+         - Second level goes through a total of N-1 elements
+         - Third level goes through a total of N-3 elements (draw it out)
+
+         - sequence is like: N, N-1, N-3, N-7..
+         - sequence has logN elements on avg, so N part becomes NlogN
+         - the -1, -3, -7 parts will always add up to N (since these are the min bars being taken out of consideration)
+         - overall formula is: Nlog(N) - N
+      - Worst case (if input is sorted)
+        - Sequence in this case is N, N-1, N-2
+        - or 1,2,3,..,N --> N(N-1)/2 ----> O(N^2)
+    """
+    def largestRectangleArea(self, heights: List[int]) -> int:
+        def recurse(start, end):
+            if start >= end:
+                return 0
+            min_idx = min(range(start, end), key=lambda e: heights[e])
+            return max(
+                (end-start) * heights[min_idx],
+                recurse(start, min_idx),
+                recurse(min_idx+1, end)
+            )
+        return recurse(0, len(heights))
+
+
+class SegmentTreeSolution:
+    """
+    This solution is almost exactly the same as the Divide and Conquer solution, but with one improvement
+    It uses segment trees to find the minimum in log(N) instead of N.
+
+    Worst case time complexity is O(Nlog(N)) - N part is when array is sorted, so we don't have balanced sub-problems
+    Average case time complexity is N (logN for the recursion depth, and logN for each step)
+    """
+    def largestRectangleArea(self, heights: List[int]) -> int:
+        # We want the index of the minimum height in an index range
+        # Send an array of indices
+        # The aggregation to be done is: get index with the smaller height
+        # So each node of the segment tree will store the index with the min height for its segment
+        segment_tree = SegmentTree(
+            nums=list(range(len(heights))),
+            operation=lambda x, y: x if heights[x] < heights[y] else y
+        )
+
+        def recurse(start, end):
+            if start >= end:
+                return 0
+            min_idx = segment_tree.aggregate(start, end - 1)
+            # print(f"min of {heights[start:end]}: {heights[min_idx]}")
+            return max(
+                (end - start) * heights[min_idx],
+                recurse(start, min_idx),
+                recurse(min_idx + 1, end)
+            )
+        return recurse(0, len(heights))
+
+
+# TODO: Move segment tree implementation to some sort of utils
+# TODO: implement update function
+
+
+from math import log, ceil, pow
+
+
+class SegmentTree:
+    """
+    My general-purpose segment tree implementation.
+
+    Tree with input array of size N as leaf nodes, and the tree aggregating 2 nodes at a time all the way to the root.
+    The aggregation can be specified via the ``operation`` param. Number of nodes = 2 * (next pow of 2 after N) - 1
+
+    Construction: O(N) DFS
+    Searching segment: O(log(N))
+    Updating value (leaf-node): O(log(N))
+    """
+
+    def __init__(self, nums: list[int], operation: Callable[[Any, Any], Any]):
+        self.nums = nums
+        len_nums = len(nums)
+        self.next_power_of_two = len_nums if (len_nums & (len_nums - 1)) == 0 else pow(2, ceil(log(len_nums, 2)))
+        self.tree = [None] * int((2 * self.next_power_of_two) - 1)
+        self.operation = operation
+        self.construct(0, len(self.nums) - 1, 0)
+
+    def construct(self, low, high, pos):
+        """
+        DFS that goes down an uninitialized segment tree, hydrates the leaf node values from ``nums``, then while
+        backtracking aggregates from the leaves up to the root
+
+        We're maintaining the following 2 sets of data
+
+        - [low, high] - Tells us the segment this node will store the result for, necessary to recognize leaf nodes
+          and know where to pick data from for each leaf node
+        - pos: This tracks the index of the tree array that corresponds to the node in the recursion tree we're
+          currently at, eg pos=1 is root.left
+        """
+        # Leaf-node values should be copied straight from the input array
+        if low == high:
+            self.tree[pos] = self.nums[low]
+            return
+        # 'Aggregate' values higher up should be combined from the next level child values
+        mid = (low + high) // 2
+        left_child_idx, right_child_idx = (2 * pos) + 1, (2 * pos) + 2
+        self.construct(low, mid, left_child_idx)
+        self.construct(mid + 1, high, right_child_idx)
+        self.tree[pos] = self.operation(self.tree[left_child_idx], self.tree[right_child_idx])
+
+    def aggregate(self, target_start, target_end):
+        def aggregate_helper(start, end, pos):
+            # No overlap - we're returning None here since in case of getting min index, there's no good default
+            # Otherwise, you could return a large value when using this segment tree for mininums for eg
+            if target_start > end or target_end < start:
+                return None
+
+            # Complete overlap: If [start, end] is entirely inside [target_start, target_end],
+            # then this node is a segment that is part of the answer
+            if target_start <= start and end <= target_end:
+                return self.tree[pos]
+            else:
+                # Partial overlap
+                middle = (start + end) // 2
+                left_aggregate = aggregate_helper(start, middle, (2 * pos) + 1)
+                right_aggregate = aggregate_helper(middle + 1, end, (2 * pos) + 2)
+                if left_aggregate is None or right_aggregate is None:
+                    return left_aggregate if right_aggregate is None else right_aggregate
+                return self.operation(left_aggregate, right_aggregate)
+
+        return aggregate_helper(0, len(self.nums) - 1, 0)
+
+
+# Testing summation using Segment Trees
+input = [2, 4, -1, 3, -6, 7, 1, 10]
+st = SegmentTree(nums=input, operation=lambda x, y: x + y)
+print(st.tree)
+assert all(st.aggregate(0, i) == sum(input[:i + 1]) for i in range(len(input)))
+print(st.aggregate(0, 3))
+
+

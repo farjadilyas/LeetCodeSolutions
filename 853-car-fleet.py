@@ -37,12 +37,12 @@
 
 
 def carFleet(self, target: int, position: List[int], speed: List[int]) -> int:
-    pairs = sorted(zip(position, speed), reverse=True)
-    slowest = -1
-    fleets = 0
-    for pos, s in pairs:
-        ttd = (target - pos) / s
-        if ttd > slowest:
-            fleets += 1
-            slowest = ttd
-    return fleets
+    sorted_indices = sorted(range(len(position)), key=lambda idx: position[idx], reverse=True)
+    slowest_eta = -1
+    num_fleets = 0
+    for i in sorted_indices:
+        eta = (target - position[i]) / speed[i]
+        if eta > slowest_eta:
+            num_fleets += 1
+            slowest_eta = eta
+    return num_fleets
