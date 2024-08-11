@@ -104,6 +104,7 @@ class SegmentTreeSolution:
 
     Worst case time complexity is O(Nlog(N)) - N part is when array is sorted, so we don't have balanced sub-problems
     Average case time complexity is N (logN for the recursion depth, and logN for each step)
+    Space Complexity: O(N)
     """
     def largestRectangleArea(self, heights: List[int]) -> int:
         # We want the index of the minimum height in an index range
@@ -119,7 +120,6 @@ class SegmentTreeSolution:
             if start >= end:
                 return 0
             min_idx = segment_tree.aggregate(start, end - 1)
-            # print(f"min of {heights[start:end]}: {heights[min_idx]}")
             return max(
                 (end - start) * heights[min_idx],
                 recurse(start, min_idx),
@@ -150,6 +150,7 @@ class SegmentTree:
     def __init__(self, nums: list[int], operation: Callable[[Any, Any], Any]):
         self.nums = nums
         len_nums = len(nums)
+        # To represent a tree with N elements, you need an array of the size 2*(next pow of 2 that is >= N) - 1
         self.next_power_of_two = len_nums if (len_nums & (len_nums - 1)) == 0 else pow(2, ceil(log(len_nums, 2)))
         self.tree = [None] * int((2 * self.next_power_of_two) - 1)
         self.operation = operation
@@ -207,5 +208,7 @@ st = SegmentTree(nums=input, operation=lambda x, y: x + y)
 print(st.tree)
 assert all(st.aggregate(0, i) == sum(input[:i + 1]) for i in range(len(input)))
 print(st.aggregate(0, 3))
+
+
 
 
