@@ -21,7 +21,7 @@
 """
 
 
-def findMin(self, nums: List[int]) -> int:
+def findMin(self, nums: list[int]) -> int:
     # If array isn't rotated
     if nums[0] <= nums[-1]:
         return nums[0]
@@ -41,3 +41,29 @@ def findMin(self, nums: List[int]) -> int:
             end = middle - 1
         middle = (start + end) // 2
     return nums[middle]
+
+
+"""
+Solution using bisect template below - super simple to implement - under 3 min
+"""
+
+
+def bisect(low, high, condition):
+    while low < high:
+        middle = (low + high) // 2
+        if condition(middle):
+            high = middle
+        else:
+            low = middle + 1
+    return low
+
+
+class Solution:
+    def findMin(self, nums: list[int]) -> int:
+        # [3,4,5,1,2] - [F,F,F,T,T] - condition: num <= nums[-1]
+        smallest_idx_less_than_pivot = bisect(
+            low=0,
+            high=len(nums)-1,
+            condition=lambda idx: nums[idx] <= nums[-1]
+        )
+        return nums[smallest_idx_less_than_pivot]

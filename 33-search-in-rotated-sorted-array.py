@@ -40,52 +40,25 @@
 """
 
 
-# Compact code without comments
-def search(self, nums, target):
-    start = 0
-    end = len(nums) - 1
-    pivot = nums[-1] + 1
-    first = target < pivot
-
-    while True:
-        middle = (start + end) // 2
-        if nums[middle] == target:
-            return middle
-        if (nums[middle] > target) == ((nums[middle] < pivot) == first):
-            end = middle - 1
-        else:
-            start = middle + 1
-        if end < start:
-            return -1
-
-
-# Commented code
-def search(self, nums, target):
-    start = 0
-    end = len(nums)-1
-
-    # Pivot is defined as the upper bound of the smaller sorted list
-    # original list = [s1,s2], rotated = [s2,s1], pivot = s1[-1]+1
-    # here, s1 and s2 are both sub-lists that are sorted
-    pivot = nums[-1]+1
-
-    # True if target is in s1, not s2 (see above)
-    first = target < pivot
-
-    while True:
-        middle = int((start+end)/2)
-        if nums[middle] == target:
-            return middle
-
-        # In normal binary search, we consider the first half if the current middle is too large compared to the target
-        # This condition makes the normal binary search move, only if middle is in the same sublist as the target
-        # If we are not in the sublist that contains the target, we must move in the opposite direction than the one
-        # we'd move in normally to ensure we consider the list that we know may contain the target
-        if (nums[middle] > target) == ((nums[middle] < pivot) == first):
-            end = middle-1
-        else:
-            start = middle+1
-
-        # No more elements to consider, so target not found
-        if end < start:
-            return -1
+class Solution:
+    def search(self, nums: List[int], target: int) -> int:
+        # Consider unrotated array to be [s1, s2] where s2 is of length k
+        # After k rotations, the array is [s2, s1]
+        # We will call s2 the first half and s1 the second half in the code below
+        low = 0
+        high = len(nums)-1
+        is_target_in_first_half = target > nums[-1]
+        while low <= high:
+            middle = (low + high) // 2
+            is_middle_in_first_half = nums[middle] > nums[-1]
+            is_middle_in_same_half_as_target = is_middle_in_first_half == is_target_in_first_half
+            if nums[middle] == target:
+                return middle
+            # Consider only the right half of the search space if:
+            # - Middle is less than target and is in the same half
+            # - Middle is greater than target, but is in the opposite half (think about it with an example)
+            if (nums[middle] < target) == is_middle_in_same_half_as_target:
+                low = middle + 1
+            else:
+                high = middle - 1
+        return -1
