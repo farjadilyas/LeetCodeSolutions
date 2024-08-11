@@ -29,24 +29,56 @@
 """
 
 
-import math
+from math import ceil
 
 
 def minEatingSpeed(self, piles, h):
+    """
+    Old solution without a bisect template - tougher to handle edge cases
+    """
     start = end = 0
     for pile in piles:
         if pile > end:
             end = pile
         start += pile
-    start = math.ceil(start / h)
+    start = ceil(start / h)
 
     while end > start:
         cur_h = 0
         middle = (start + end) >> 1
         for pile in piles:
-            cur_h += math.ceil(pile / middle)
+            cur_h += ceil(pile / middle)
         if cur_h > h:
             start = middle + 1
         else:
             end = middle
     return start
+
+
+"""
+  Below, we use a bisect template that works well for all binary search problems
+  
+  Because all of these problems can be modelled as find the smallest idx that satisfies X condition
+"""
+
+
+def bisect(low, high, condition):
+    """
+    First the smallest idx in [low, high] for which ``condition`` returns ``True``
+    """
+    while low < high:
+        middle = (low + high) // 2
+        if condition(middle):
+            high = middle
+        else:
+            low = middle + 1
+    return low
+
+
+class Solution:
+    def minEatingSpeed(self, piles: List[int], h: int) -> int:
+        return bisect(
+            low=ceil(sum(piles)/h),
+            high=max(piles),
+            condition=lambda k: sum(ceil(pile/k) for pile in piles) <= h
+        )

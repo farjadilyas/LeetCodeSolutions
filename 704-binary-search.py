@@ -24,13 +24,15 @@ def generic_bisect(nums: list[int], first_match_condition: Callable[[int], bool]
     """
     Flexible binary search solution
 
-    This solution tries to find the smallest index that does NOT satisfy any given condition
+    This solution tries to find the smallest index that satisfies a given condition
 
     Eg: Given a search space that gives the following when mapped with ``condition``:
-
     [FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE]
 
     This implementation will find the index of the first TRUE
+
+    Advantage: Keeps binary search simple, defers the heavy lifting to deducing the condition that will work and the
+    post-processing required to return the correct answer
     """
     low, high = 0, len(nums)
     while low < high:
