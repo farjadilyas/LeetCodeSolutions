@@ -5,30 +5,31 @@
  Approach:
  - Use two pointers, move one n steps forward
  - Then move both forward in lock-step till the one that moved first has reached the end of the list
- - Remove the node pointed to by the back pointer
+ - Drop the (back pointer + 1)th node
 
  Time Complexity: O(N)
  Space Complexity: O(1)
 """
 
 
-def removeNthFromEnd(self, head, n: int):
-    # Move the front pointer n steps forward
-    front = head
+def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:
+    # Add a dummy head - makes the scenario where the head itself needs to be removed easier
+    head = ListNode(next=head)
+    # Give end_ptr an N-step head start
+    end_ptr = head
     for i in range(n):
-        front = front.next
+        end_ptr = end_ptr.next
+    n_back_ptr = head
+    # Here, checking for end_ptr.next instead of end_ptr means marker stops one node before the one to be removed
+    while end_ptr.next:
+        end_ptr = end_ptr.next
+        n_back_ptr = n_back_ptr.next
+    # drop nth node from the end
+    n_back_ptr.next = n_back_ptr.next.next
+    return head.next
 
-    # If front is None, then the first node needs to be removed
-    if front is None:
-        head = head.next
-    else:
-        # Move the front and back pointer till the front hits the end
-        back = head
-        while front.next is not None:
-            front = front.next
-            back = back.next
 
-        # Back now points to the node preceding the one that needs to be removed
-        back.next = back.next.next
-
-    return head
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
