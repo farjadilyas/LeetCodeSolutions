@@ -46,22 +46,74 @@
 """
 
 
-def copyRandomList(self, head):
-    cur = head
-    ans = cur_ans = Node(-1)
+class RecursiveSolution:
+    """
+    Treats input linked list like a graph, conducts DFS on it while keeping track of visited nodes to correctly
+    resolve cyclic-dependencies
+    """
+    def copyRandomList(self, head: 'Optional[Node]') -> 'Optional[Node]':
+        hm = {None: None}
 
-    # Copy next chain and simultaneously build output linked list
-    # Place each copied node as a reference inside the corresponding original node
-    while cur:
-        cur_ans.next = cur.cp = Node(cur.val, None, None)
-        cur_ans = cur_ans.next
-        cur = cur.next
+        def recurse(current):
+            if current in hm:
+                return hm[current]
+            copy_of_current = Node(x=current.val)
+            hm[current] = copy_of_current
+            copy_of_current.next = recurse(current.next)
+            copy_of_current.random = recurse(current.random)
+            return copy_of_current
+        return recurse(head)
 
-    # Point random pointers to the copied nodes that are available with each original node
-    cur = head
-    while cur:
-        if cur.random:
-            cur.cp.random = cur.random.cp
-        cur = cur.next
 
-    return ans.next
+class IterativeSolution:
+    def copyRandomList(self, head: 'Optional[Node]') -> 'Optional[Node]':
+        hm = {None: None}
+        # Create copies for each node and store old -> new mapping
+        current = head
+        while current:
+            hm[current] = Node(current.val, current.next, current.random)
+            current = current.next
+        # Now that all new copies are created, add the links
+        # This way you don't have to bother with resolving depdendencies in the right order
+        current = head
+        while current:
+            hm[current].next = hm[current.next]
+            hm[current].random = hm[current.random]
+            current = current.next
+        return hm.get(head)
+
+
+class OptimalInterweavingSolution:
+    """
+    Modify the input list, place copies of each original node next to the original node in the original list so that
+    the list is interweaved with new-old-new-... nodes
+
+    Update the copies' random pointers first
+    Then update their next pointers as needed
+
+    This solution basically sets up the linked list so that you can get the copy of any original node by going to the
+    next node. So this avoids the need for a hashmap and achieves constant space complexity
+    """
+    def copyRandomList(self, head: 'Optional[Node]') -> 'Optional[Node]':
+        # Insert copy of each original node after it in the original list
+        current = head
+        while current:
+            current.next = Node(x=current.val, next=current.next)
+            current = current.next.next
+
+        def get_copy(node):
+            return node.next
+
+        # Set the random pointers for the copied nodes
+        current = head
+        while current:
+            get_copy(current).random = get_copy(current.random)
+            current = current.next.next
+
+        # Create a list out of the copied pointers by changing their next ptr
+        current = head
+        while current:
+            next_original_node = current.next.next
+            get_copy(current).next = get_copy(next_original_node)
+            current = next_original_node
+        return get_copy(head)
